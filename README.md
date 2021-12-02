@@ -1,2 +1,3 @@
-# distributed-game
+# Distributed Game
+
 Web game with peer-to-peer communication between playeers
