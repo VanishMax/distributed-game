@@ -1,0 +1,22 @@
+.join {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 2rem auto 0;
+}
+
+.join_btn {
+  background: hsl(0, 0%, 95%);
+  border: 1px solid hsl(0, 0%, 50%);
+  border-radius: 0.5rem;
+  padding: 1.5rem 6rem;
+  cursor: pointer;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.join_joined {}
+
+.join_failed {
+  color: hsl(0, 50%, 50%);
+}

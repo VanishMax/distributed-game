@@ -4,6 +4,8 @@ import './layout.css';
 import Canvas from './components/canvas/Canvas';
 import { Player as PlayerType } from './types';
 import Player from './components/player/Player';
+import { useState } from 'react';
+import Join from './components/join/join';
 
 const players: PlayerType[] = [{
   id: '',
@@ -18,16 +20,26 @@ const players: PlayerType[] = [{
 }];
 
 function App() {
+  const [joined, setJoined] = useState(false);
+
   return (
     <div className="layout">
       <h1>Distributed game</h1>
-      <Chat />
-      <Canvas />
-      <div className="players">
-        {players.map((player) => (
-          <Player player={player} />
-        ))}
-      </div>
+      {!joined ? (
+        <>
+          <Join onJoin={() => setJoined(true)} />
+        </>
+      ) : (
+        <>
+          <Chat />
+          <Canvas />
+          <div className="players">
+            {players.map((player) => (
+              <Player player={player} />
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 }
