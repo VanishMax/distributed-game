@@ -1,0 +1,22 @@
+.player {
+  display: flex;
+  align-items: center;
+  width: auto;
+  height: 44px;
+  padding: 0.25em 0.75em;
+  background: hsl(0, 0%, 90%);
+  border-radius: 2em;
+}
+
+.player_spinner {
+  margin-right: 0.5em;
+}
+
+.player_name {
+
+}
+
+.player_score {
+  margin-left: 0.5rem;
+  text-decoration: underline;
+}
