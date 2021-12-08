@@ -2,6 +2,7 @@ import React  from 'preact';
 import './join.css';
 import socketConnection from '../../sockets';
 import { useState } from 'react';
+import setupRtc from '../../rtc';
 
 interface JoinProps {
   onJoin: () => void,
@@ -16,6 +17,7 @@ function Join({ onJoin }: JoinProps) {
       onConnect: (socket) => {
         console.log('Connected:', socket.id);
         setSuccess(true);
+        setupRtc(socket);
         onJoin();
       },
       onError: () => {

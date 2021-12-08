@@ -7,7 +7,11 @@ interface ConnectionProps {
 }
 
 const socketConnection = (props: ConnectionProps) => {
-  const socket = io('localhost:3001');
+  const socket = io('localhost:3001', {
+    query: {
+      rtcId: 'mem',
+    },
+  });
 
   socket.on('connect', () => {
     props.onConnect(socket);

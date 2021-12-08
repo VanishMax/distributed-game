@@ -9,8 +9,15 @@ const io = new Server(server, {
     }
 });
 
+const DEFAULT_ROOM = 'room';
+
 io.on('connection', (socket) => {
-    console.log('a user connected');
+    socket.on('message', (event) => {
+        console.log('message', event);
+    });
+
+    socket.join(DEFAULT_ROOM);
+    socket.to(DEFAULT_ROOM).emit('joined', socket.id);
 });
 
 const port: number = 3001;
