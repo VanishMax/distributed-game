@@ -9,6 +9,7 @@
 
 .canvas {
   flex-grow: 1;
+  cursor: crosshair;
 }
 
 .colors {
