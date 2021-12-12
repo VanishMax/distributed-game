@@ -40,12 +40,12 @@ body {
 .layout .chat {
   grid-row-start: 2;
   grid-column-start: 2;
-  grid-column-end: 4;
+  grid-column-end: 3;
 }
 
 .layout .canvas_wrap {
   grid-row-start: 2;
-  grid-column-start: 4;
+  grid-column-start: 3;
   grid-column-end: 6;
 }
 
