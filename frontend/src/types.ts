@@ -4,3 +4,8 @@ export interface Player {
   connected: boolean,
   score: number,
 }
+
+export interface Rules {
+  type: 'drawer' | 'guesser',
+  word: string | null;
+}

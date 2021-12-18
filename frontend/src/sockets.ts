@@ -1,16 +1,15 @@
 import { io, Socket } from 'socket.io-client';
 
 interface ConnectionProps {
- onConnect: (socket: Socket) => void,
- onDisconnect?: (socket: Socket) => void,
- onError?: () => void,
+  name: string,
+  onConnect: (socket: Socket) => void,
+  onDisconnect?: (socket: Socket) => void,
+  onError?: () => void,
 }
 
 const socketConnection = (props: ConnectionProps) => {
   const socket = io('localhost:3001', {
-    query: {
-      rtcId: 'mem',
-    },
+    query: { name: props.name },
   });
 
   socket.on('connect', () => {

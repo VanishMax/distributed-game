@@ -1,45 +1,49 @@
 import React, { render } from 'preact';
-import Chat from './components/chat/Chat';
-import './layout.css';
-import Canvas from './components/canvas/Canvas';
-import { Player as PlayerType } from './types';
-import Player from './components/player/Player';
-import { useState } from 'react';
+import type { Socket } from 'socket.io-client';
+import type { Rules } from './types';
+import { useEffect, useState } from 'react';
 import Join from './components/join/join';
-
-const players: PlayerType[] = [{
-  id: '',
-  nickname: 'GneyHabub',
-  connected: true,
-  score: 0,
-}, {
-  id: '',
-  nickname: 'VanishMax',
-  connected: false,
-  score: 0,
-}];
+import './layout.css';
+import Game from './game';
 
 function App() {
   const [joined, setJoined] = useState(false);
+  const [socket, setSocket] = useState<Socket | null>(null);
+  const [rules, setRules] = useState<Rules>();
+
+  const startGame = (rule: Rules) => {
+    setJoined(true);
+    setRules(rule);
+  };
+
+  useEffect(() => {
+    if (socket) {
+
+    }
+  }, [socket]);
 
   return (
     <div className="layout">
-      <h1>Distributed game</h1>
+      <div className="header">
+        <h1>Distributed game</h1>
+        {rules ? (
+          <span>
+            Congratulations! You are {rules.type}.
+            {rules.type === 'guesser'
+              ? <span>You need to guess the word.</span>
+              : <span>You need to draw the "{rules.word}"</span>
+            }
+          </span>
+        ) : null}
+      </div>
       {!joined ? (
-        <>
-          <Join onJoin={() => setJoined(true)} />
-        </>
-      ) : (
-        <>
-          <Chat />
-          <Canvas />
-          <div className="players">
-            {players.map((player) => (
-              <Player player={player} />
-            ))}
-          </div>
-        </>
-      )}
+        <Join
+          onJoin={(rules) => startGame(rules)}
+          setParentSocket={(sock) => setSocket(sock)}
+        />
+      ) : rules ? (
+        <Game rules={rules} />
+      ) : null}
     </div>
   );
 }

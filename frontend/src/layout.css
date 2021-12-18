@@ -16,14 +16,14 @@ body {
 
 .layout {
   display: grid;
-  grid-template-rows: 80px 70% auto;
+  grid-template-rows: 120px 70% auto;
   grid-template-columns: 4rem 1fr 1fr 1fr 1fr 4rem;
   grid-column-gap: 2rem;
   height: 100vh;
   width: 100%;
 }
 
-.layout h1 {
+.layout .header {
   grid-row-start: 1;
   grid-column-start: 2;
   grid-column-end: span 4;

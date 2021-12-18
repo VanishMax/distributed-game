@@ -1,36 +1,72 @@
 import React  from 'preact';
-import './join.css';
-import socketConnection from '../../sockets';
+import type { Socket } from 'socket.io-client';
+import type { Rules } from '../../types';
 import { useState } from 'react';
-import setupRtc from '../../rtc';
+import socketConnection from '../../sockets';
+import './join.css';
 
 interface JoinProps {
-  onJoin: () => void,
+  onJoin: (rules: Rules) => void,
+  setParentSocket: (sock: Socket | null) => void,
 }
 
-function Join({ onJoin }: JoinProps) {
-  const [err, setErr] = useState(false);
+function Join({ onJoin, setParentSocket }: JoinProps) {
+  const [name, setName] = useState('');
+  const [err, setErr] = useState('');
   const [success, setSuccess] = useState(false);
+  const [joined, setJoined] = useState(0);
 
   const roomJoin = () => {
+    if (success) return;
+    if (!name) {
+      setErr('Please, enter the name!');
+      return;
+    }
+
+    setErr('');
     socketConnection({
-      onConnect: (socket) => {
-        console.log('Connected:', socket.id);
+      name,
+      onConnect: (s) => {
         setSuccess(true);
-        setupRtc(socket);
-        onJoin();
+        setParentSocket(s);
+
+        s.on('joined-amount', (amount: number) => {
+          setJoined(amount);
+        });
+
+        s.on('error', (err: string) => {
+          setErr(err);
+          setSuccess(false);
+          setParentSocket(null);
+        });
+
+        s.on('game-started', (rules) => {
+          onJoin(rules);
+        });
+
+        window.addEventListener('beforeunload', () => {
+          s.emit('unload');
+        });
+
       },
       onError: () => {
-        setErr(true)
+        setErr('Failed connecting!');
       },
     })
   };
 
   return (
     <div className="join">
-      <button type="button" className="join_btn" onClick={roomJoin}>Join the room</button>
-      {success && <p className="join_joined">Already joined: 1 / 3</p>}
-      {err && <p className="join_failed">Failed joining</p>}
+      <input
+        type="text"
+        className="join_inp"
+        placeholder="Enter the nickname"
+        value={name}
+        onInput={(e) => setName(e.currentTarget.value)}
+      />
+      <button disabled={success} type="button" className="join_btn" onClick={roomJoin}>Join the room</button>
+      {success && <p className="join_joined">Already joined: {joined} / 4</p>}
+      {err && <p className="join_failed">{err}</p>}
     </div>
   );
 }
