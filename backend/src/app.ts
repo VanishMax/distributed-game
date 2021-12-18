@@ -19,17 +19,13 @@ const sendInvitation = async () => {
   const sockets = await io.in(DEFAULT_ROOM).fetchSockets();
   const rand = random(0, sockets.length);
   sockets.forEach((sock, i) => {
-      if (i === rand) {
-          sock.emit('game-started', {
-              type: 'drawer',
+      sock.emit('game-started', {
+          rules: {
+              type: i === rand ? 'drawer' : 'guesser',
               word: 'Cat',
-          });
-      } else {
-          sock.emit('game-started', {
-              type: 'guesser',
-              word: null,
-          });
-      }
+          },
+          players: connected,
+      });
   });
   gameStarted = true;
 };

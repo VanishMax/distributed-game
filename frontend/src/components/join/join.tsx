@@ -1,12 +1,12 @@
 import React  from 'preact';
 import type { Socket } from 'socket.io-client';
-import type { Rules } from '../../types';
+import type { RulesRequest } from '../../types';
 import { useState } from 'react';
-import socketConnection from '../../sockets';
+import socketConnection from '../../utils/sockets';
 import './join.css';
 
 interface JoinProps {
-  onJoin: (rules: Rules) => void,
+  onJoin: (rules: RulesRequest) => void,
   setParentSocket: (sock: Socket | null) => void,
 }
 

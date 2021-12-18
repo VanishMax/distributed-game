@@ -1,6 +1,6 @@
 import React, { render } from 'preact';
 import type { Socket } from 'socket.io-client';
-import type { Rules } from './types';
+import type { Player, Rules, RulesRequest } from './types';
 import { useEffect, useState } from 'react';
 import Join from './components/join/join';
 import './layout.css';
@@ -10,10 +10,17 @@ function App() {
   const [joined, setJoined] = useState(false);
   const [socket, setSocket] = useState<Socket | null>(null);
   const [rules, setRules] = useState<Rules>();
+  const [players, setPlayers] = useState<Player[]>([]);
 
-  const startGame = (rule: Rules) => {
+  const startGame = (rule: RulesRequest) => {
     setJoined(true);
-    setRules(rule);
+    setRules(rule.rules);
+    setPlayers(rule.players.map((player) => ({
+      id: player.id,
+      nickname: player.name,
+      connected: true,
+      score: 0,
+    })))
   };
 
   useEffect(() => {
@@ -31,18 +38,19 @@ function App() {
             Congratulations! You are {rules.type}.
             {rules.type === 'guesser'
               ? <span>You need to guess the word.</span>
-              : <span>You need to draw the "{rules.word}"</span>
+              : <span>You need to draw the <b>"{rules.word}"</b></span>
             }
           </span>
         ) : null}
       </div>
+
       {!joined ? (
         <Join
           onJoin={(rules) => startGame(rules)}
           setParentSocket={(sock) => setSocket(sock)}
         />
-      ) : rules ? (
-        <Game rules={rules} />
+      ) : rules && players.length && socket ? (
+        <Game rules={rules} players={players} socket={socket} />
       ) : null}
     </div>
   );
