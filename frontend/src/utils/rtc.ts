@@ -34,7 +34,7 @@ const setupRtc = (me: Player, players: Player[], dataCallback: (d: RtcMessage) =
   });
 
   rtc.on('error', (conn) => {
-    console.log(conn);
+    console.error(conn);
   });
 
   const sendMessage = (text: string, player?: Player, correct?: boolean) => {
@@ -56,10 +56,14 @@ const setupRtc = (me: Player, players: Player[], dataCallback: (d: RtcMessage) =
       } as RtcMessage);
     });
   };
+  const onUnmount = () => {
+    rtc.destroy();
+  };
 
   return {
     sendMessage,
     updateCanvas,
+    onUnmount,
   };
 };
 

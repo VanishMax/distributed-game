@@ -112,7 +112,10 @@ function Game({ me, word, players, socket, leave }: GameProps) {
       <GameOver
         winner={winner}
         amIWinner={winner === me.name}
-        goBack={leave}
+        goBack={() => {
+          rtc?.onUnmount();
+          leave();
+        }}
       />
     </>
   );
