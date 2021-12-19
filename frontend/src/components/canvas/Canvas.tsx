@@ -5,13 +5,21 @@ import colors from './colors';
 
 interface CanvasProps {
   canDraw: boolean,
+  update: (moves: Line[]) => void,
+  lines: Line[][],
 }
 
-function Canvas({ canDraw }: CanvasProps) {
-  const [selectedColor, setSelectedColor] = useState('');
+export interface Line {
+  x: number,
+  y: number,
+  color: string,
+}
 
+function Canvas({ canDraw, update, lines }: CanvasProps) {
+  const [selectedColor, setSelectedColor] = useState('');
   const [isMouseDown, setIsMouseDown] = useState(false);
-  const [lines, setLines] = useState<{x: number, y: number, color: string}[]>([]);
+  const [moves, setMoves] = useState<Line[]>([]);
+
   const canvasEl = useRef<HTMLCanvasElement>(null);
   const  getMousePos =(canvas: HTMLCanvasElement, evt: MouseEvent) => {
     const rect = canvas.getBoundingClientRect();
@@ -21,18 +29,30 @@ function Canvas({ canDraw }: CanvasProps) {
     };
   };
 
+  const drawLine = (ctx: CanvasRenderingContext2D, line: Line[]) => {
+    for (let i = 1; i < line.length; i++) {
+      ctx.beginPath();
+      ctx.moveTo(line[i-1].x, line[i-1].y);
+      ctx.lineCap = 'round';
+      ctx.strokeStyle = line[i].color;
+      ctx.lineTo(line[i].x, line[i].y);
+      ctx.stroke();
+    }
+  };
+
   useEffect(() => {
     if(canvasEl.current) {
       const ctx = canvasEl.current.getContext('2d');
+      if(ctx) drawLine(ctx, moves);
+    }
+  }, [moves]);
+
+  useEffect(() => {
+    if(canvasEl.current && !canDraw) {
+      const ctx = canvasEl.current.getContext('2d');
       if(ctx) {
-        for (var i = 1; i < lines.length; i++) {
-          ctx.beginPath();
-          ctx.moveTo(lines[i-1].x, lines[i-1].y);
-          ctx.lineCap = "round";
-          ctx.strokeStyle = lines[i].color;
-          ctx.lineTo(lines[i].x, lines[i].y);
-          ctx.stroke();
-        }
+        ctx.clearRect(0, 0, canvasEl.current.width, canvasEl.current.height);
+        lines.forEach(line => drawLine(ctx, line));
       }
     }
   }, [lines]);
@@ -45,13 +65,14 @@ function Canvas({ canDraw }: CanvasProps) {
     if (!canDraw) return;
     if(isMouseDown && canvasEl.current){
       const currentPosition = getMousePos(canvasEl.current, evt);
-      setLines((prev) => [...prev, {...currentPosition, color: colors[selectedColor]}]);
+      setMoves((prev) => [...prev, {...currentPosition, color: colors[selectedColor]}]);
     }
   }
   const mouseup = () => {
     if (!canDraw) return;
     setIsMouseDown(false);
-    setLines([]);
+    update(moves);
+    setMoves([]);
   }
 
 

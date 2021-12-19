@@ -1,7 +1,7 @@
 import React  from 'preact';
 import type { Socket } from 'socket.io-client';
 import { useEffect, useState } from 'react';
-import Canvas from './components/canvas/Canvas';
+import Canvas, { Line } from './components/canvas/Canvas';
 import { Message, Player as PlayerType } from './types';
 import Player from './components/player/Player';
 import './components/chat/chat.css';
@@ -22,13 +22,14 @@ function Game({ me, word, players, socket, leave }: GameProps) {
     name: 'System',
     message: `Player ${player.name} has joined the game!`,
   })));
+  const [lines, setLines] = useState<Line[][]>([]);
 
   const [rtc, setRtc] = useState<ReturnType<typeof setupRtc>>();
   const isDrawer = me.type === 'drawer';
   const [winner, setWinner] = useState<string>();
 
   const addMessage = (msg: string, name: string) => {
-    setMessages([...messages, {
+    setMessages((prev) => [...prev, {
       name: name,
       message: msg,
     }]);
@@ -37,6 +38,12 @@ function Game({ me, word, players, socket, leave }: GameProps) {
   const sendMessage = () => {
     rtc?.sendMessage(text);
     setText('');
+  };
+
+  const updateCanvas = (moves: Line[]) => {
+    const newLines = [...lines, moves];
+    rtc?.updateCanvas(newLines);
+    setLines(newLines);
   };
 
   useEffect(() => {
@@ -57,7 +64,7 @@ function Game({ me, word, players, socket, leave }: GameProps) {
       }
 
       if (data.type === 'canvas') {
-        // TODO: receive canvas methods
+        setLines(data.drawings);
         return;
       }
     });
@@ -90,7 +97,11 @@ function Game({ me, word, players, socket, leave }: GameProps) {
         ) : null}
       </div>
 
-      <Canvas canDraw={me.type === 'drawer'} />
+      <Canvas
+        canDraw={me.type === 'drawer'}
+        lines={lines}
+        update={updateCanvas}
+      />
 
       <div className="players">
         {players.map((player) => (

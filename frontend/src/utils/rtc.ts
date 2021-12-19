@@ -1,5 +1,6 @@
 import Peer from 'peerjs';
 import type { Player, Connection, RtcMessage } from '../types';
+import type { Line } from '../components/canvas/Canvas';
 
 const setupRtc = (me: Player, players: Player[], dataCallback: (d: RtcMessage) => void) => {
   const rtc = new Peer(me.id);
@@ -25,7 +26,6 @@ const setupRtc = (me: Player, players: Player[], dataCallback: (d: RtcMessage) =
   });
 
   rtc.on('connection', (conn) => {
-    console.log('connected', conn, Date.now());
     connections.push({
       player: {} as Player,
       connection: conn,
@@ -34,19 +34,28 @@ const setupRtc = (me: Player, players: Player[], dataCallback: (d: RtcMessage) =
   });
 
   const sendMessage = (text: string, player?: Player, correct?: boolean) => {
-    console.log('sending', connections, text);
     connections.map((conn) => {
       conn.connection.send({
         type: 'message',
         player: player || me,
         message: text,
         correct: correct || false,
-      });
+      } as RtcMessage);
+    });
+  };
+
+  const updateCanvas = (lines: Line[][]) => {
+    connections.map((conn) => {
+      conn.connection.send({
+        type: 'canvas',
+        drawings: lines,
+      } as RtcMessage);
     });
   };
 
   return {
     sendMessage,
+    updateCanvas,
   };
 };
 
