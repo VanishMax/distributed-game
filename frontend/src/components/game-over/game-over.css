@@ -1,0 +1,36 @@
+.game-over {
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  padding: 5rem;
+  overflow: hidden;
+  background: white;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity .3s ease-in-out;
+}
+
+.game-over.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.game-over h2, .game-over p {
+  text-align: center;
+}
+
+.game-over button {
+  display: block;
+  margin: 3rem auto 0;
+  background: hsl(0, 0%, 95%);
+  border: 1px solid hsl(0, 0%, 50%);
+  border-radius: 0.5rem;
+  padding: 1.5rem 6rem;
+  cursor: pointer;
+  font-weight: bold;
+  text-transform: uppercase;
+}

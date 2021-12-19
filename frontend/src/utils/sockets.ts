@@ -7,8 +7,10 @@ interface ConnectionProps {
   onError?: () => void,
 }
 
+export let socket: Socket;
+
 const socketConnection = (props: ConnectionProps) => {
-  const socket = io('localhost:3001', {
+  socket = io('localhost:3001', {
     query: { name: props.name },
   });
 

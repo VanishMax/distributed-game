@@ -1,44 +1,47 @@
 import React, { render } from 'preact';
-import type { Socket } from 'socket.io-client';
-import type { Player, Rules, RulesRequest } from './types';
-import { useEffect, useState } from 'react';
+import type { Player } from './types';
+import { socket } from './utils/sockets';
+import { useState } from 'react';
 import Join from './components/join/join';
 import './layout.css';
 import Game from './game';
+import getRandomPhrase from './utils/getRandomPhrase';
 
 function App() {
   const [joined, setJoined] = useState(false);
-  const [socket, setSocket] = useState<Socket | null>(null);
-  const [rules, setRules] = useState<Rules>();
   const [players, setPlayers] = useState<Player[]>([]);
+  const [myPlayer, setMyPlayer] = useState<Player>();
+  const [word, setWord] = useState<string | null>();
 
-  const startGame = (rule: RulesRequest) => {
+  const startGame = (gamePlayers: Player[]) => {
     setJoined(true);
-    setRules(rule.rules);
-    setPlayers(rule.players.map((player) => ({
-      id: player.id,
-      nickname: player.name,
-      connected: true,
-      score: 0,
-    })))
+    setPlayers(gamePlayers);
+
+    const me = gamePlayers.find(player => player.id === socket?.id) as Player;
+    setMyPlayer(me);
+    setWord(me.type === 'drawer' ? getRandomPhrase() : null);
   };
 
-  useEffect(() => {
+  const leaveGame = () => {
     if (socket) {
-
+      socket.emit('unload');
+      setMyPlayer(undefined);
+      setPlayers([]);
+      setWord(undefined);
+      setJoined(false);
     }
-  }, [socket]);
+  };
 
   return (
     <div className="layout">
       <div className="header">
         <h1>Distributed game</h1>
-        {rules ? (
+        {myPlayer ? (
           <span>
-            Congratulations! You are {rules.type}.
-            {rules.type === 'guesser'
+            Congratulations! You are {myPlayer.type}.&nbsp;
+            {myPlayer.type === 'guesser'
               ? <span>You need to guess the word.</span>
-              : <span>You need to draw the <b>"{rules.word}"</b></span>
+              : <span>You need to draw the <b>"{word}"</b></span>
             }
           </span>
         ) : null}
@@ -46,11 +49,16 @@ function App() {
 
       {!joined ? (
         <Join
-          onJoin={(rules) => startGame(rules)}
-          setParentSocket={(sock) => setSocket(sock)}
+          onJoin={(gamePlayers) => startGame(gamePlayers)}
         />
-      ) : rules && players.length && socket ? (
-        <Game rules={rules} players={players} socket={socket} />
+      ) : myPlayer && players.length && socket ? (
+        <Game
+          me={myPlayer}
+          players={players}
+          socket={socket}
+          word={word as string | null}
+          leave={leaveGame}
+        />
       ) : null}
     </div>
   );

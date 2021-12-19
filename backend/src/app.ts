@@ -10,7 +10,7 @@ const io = new Server(server, {
 });
 
 const DEFAULT_ROOM = 'room';
-let connected: { id: string, name: string }[] = [];
+let connected: { id: string, name: string, type: 'drawer' | 'guesser' | null }[] = [];
 let gameStarted = false;
 
 const random = (min: number, max: number) => Math.floor(Math.random() * (max - min)) + min;
@@ -18,14 +18,12 @@ const random = (min: number, max: number) => Math.floor(Math.random() * (max - m
 const sendInvitation = async () => {
   const sockets = await io.in(DEFAULT_ROOM).fetchSockets();
   const rand = random(0, sockets.length);
-  sockets.forEach((sock, i) => {
-      sock.emit('game-started', {
-          rules: {
-              type: i === rand ? 'drawer' : 'guesser',
-              word: 'Cat',
-          },
-          players: connected,
-      });
+
+  sockets.forEach((sock) => {
+      sock.emit('game-started', connected.map((player, i) => ({
+          ...player,
+          type: i === rand ? 'drawer' : 'guesser',
+      })));
   });
   gameStarted = true;
 };
@@ -43,18 +41,20 @@ io.on('connection', async (socket) => {
     }
 
     socket.join(DEFAULT_ROOM);
-    connected.push({ id: socket.id, name });
+    connected.push({ id: socket.id, name, type: null });
     console.log(`User ${name} with id ${socket.id} has joined!`);
 
     socket.emit('joined-amount', connected.length);
     socket.to(DEFAULT_ROOM).emit('joined-amount', connected.length);
 
-    if (connected.length === 3) {
+    if (connected.length === 4) {
         await sendInvitation();
     }
 
-    socket.on('login', ({ id, name }: { id: string, name: string }) => {
-        console.log('login', id);
+    socket.on('game-over', async () => {
+        gameStarted = false;
+        connected = [];
+        (await io.fetchSockets()).map(conn => conn.disconnect());
     });
 
     socket.on('disconnect', () => {
@@ -69,7 +69,6 @@ io.on('connection', async (socket) => {
     socket.on('onload', () => {
         socket.disconnect();
     });
-
 });
 
 const port: number = 3001;

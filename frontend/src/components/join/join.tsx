@@ -1,16 +1,14 @@
 import React  from 'preact';
-import type { Socket } from 'socket.io-client';
-import type { RulesRequest } from '../../types';
+import type { Player } from '../../types';
 import { useState } from 'react';
 import socketConnection from '../../utils/sockets';
 import './join.css';
 
 interface JoinProps {
-  onJoin: (rules: RulesRequest) => void,
-  setParentSocket: (sock: Socket | null) => void,
+  onJoin: (players: Player[]) => void,
 }
 
-function Join({ onJoin, setParentSocket }: JoinProps) {
+function Join({ onJoin }: JoinProps) {
   const [name, setName] = useState('');
   const [err, setErr] = useState('');
   const [success, setSuccess] = useState(false);
@@ -28,7 +26,6 @@ function Join({ onJoin, setParentSocket }: JoinProps) {
       name,
       onConnect: (s) => {
         setSuccess(true);
-        setParentSocket(s);
 
         s.on('joined-amount', (amount: number) => {
           setJoined(amount);
@@ -37,11 +34,10 @@ function Join({ onJoin, setParentSocket }: JoinProps) {
         s.on('error', (err: string) => {
           setErr(err);
           setSuccess(false);
-          setParentSocket(null);
         });
 
-        s.on('game-started', (rules) => {
-          onJoin(rules);
+        s.on('game-started', (players: Player[]) => {
+          onJoin(players);
         });
 
         window.addEventListener('beforeunload', () => {

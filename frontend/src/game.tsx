@@ -2,35 +2,67 @@ import React  from 'preact';
 import type { Socket } from 'socket.io-client';
 import { useEffect, useState } from 'react';
 import Canvas from './components/canvas/Canvas';
-import { Message, Player as PlayerType, Rules } from './types';
+import { Message, Player as PlayerType } from './types';
 import Player from './components/player/Player';
 import './components/chat/chat.css';
+import setupRtc from './utils/rtc';
+import GameOver from './components/game-over/game-over';
 
 interface GameProps {
-  rules: Rules,
+  me: PlayerType,
   players: PlayerType[],
   socket: Socket,
+  word: string | null,
+  leave: () => void,
 }
 
-function Game({ rules, players, socket }: GameProps) {
+function Game({ me, word, players, socket, leave }: GameProps) {
   const [text, setText] = useState('');
   const [messages, setMessages] = useState<Message[]>(players.map((player) => ({
     name: 'System',
-    message: `Player ${player.nickname} has joined the game!`,
+    message: `Player ${player.name} has joined the game!`,
   })));
 
-  const myPlayer = players.find((player) => player.id === socket.id) as PlayerType;
+  const [rtc, setRtc] = useState<ReturnType<typeof setupRtc>>();
+  const isDrawer = me.type === 'drawer';
+  const [winner, setWinner] = useState<string>();
+
+  const addMessage = (msg: string, name: string) => {
+    setMessages([...messages, {
+      name: name,
+      message: msg,
+    }]);
+  };
 
   const sendMessage = () => {
-    setMessages([...messages, {
-      name: myPlayer.nickname,
-      message: text,
-    }]);
+    rtc?.sendMessage(text);
     setText('');
   };
 
   useEffect(() => {
+    const webrtc = setupRtc(me, players, (data) => {
+      if (data.type === 'message') {
+        addMessage(data.message, data.player.name);
+        let isValid = data.correct || (isDrawer && word === data.message);
 
+        if (isDrawer) {
+          webrtc.sendMessage(data.message, data.player, isValid);
+        }
+
+        if (isValid) {
+          setWinner(data.player.name);
+          if (isValid) socket?.emit('game-over');
+        }
+        return;
+      }
+
+      if (data.type === 'canvas') {
+        // TODO: receive canvas methods
+        return;
+      }
+    });
+
+    setRtc(webrtc);
   }, []);
 
   return (
@@ -45,24 +77,32 @@ function Game({ rules, players, socket }: GameProps) {
           ))}
         </div>
 
-        <div className="chat_input">
-          <input
-            type="text"
-            placeholder="Guess the word"
-            value={text}
-            onInput={(e) => setText(e.currentTarget.value)}
-          />
-          <button type="submit" onClick={() => sendMessage()}>Submit</button>
-        </div>
+        {me.type === 'guesser' ? (
+          <div className="chat_input">
+            <input
+              type="text"
+              placeholder="Guess the word"
+              value={text}
+              onInput={(e) => setText(e.currentTarget.value)}
+            />
+            <button type="submit" onClick={() => sendMessage()}>Submit</button>
+          </div>
+        ) : null}
       </div>
 
-      <Canvas />
+      <Canvas canDraw={me.type === 'drawer'} />
 
       <div className="players">
         {players.map((player) => (
           <Player player={player} />
         ))}
       </div>
+
+      <GameOver
+        winner={winner}
+        amIWinner={winner === me.name}
+        goBack={leave}
+      />
     </>
   );
 }

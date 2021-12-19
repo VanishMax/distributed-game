@@ -3,7 +3,11 @@ import './canvas.css';
 import { useState, useRef, useEffect } from 'react';
 import colors from './colors';
 
-function Canvas() {
+interface CanvasProps {
+  canDraw: boolean,
+}
+
+function Canvas({ canDraw }: CanvasProps) {
   const [selectedColor, setSelectedColor] = useState('');
 
   const [isMouseDown, setIsMouseDown] = useState(false);
@@ -34,15 +38,18 @@ function Canvas() {
   }, [lines]);
 
   const mousedown = () => {
+    if (!canDraw) return;
     setIsMouseDown(true);
   }
   const mousemove = (evt: MouseEvent) =>  {
+    if (!canDraw) return;
     if(isMouseDown && canvasEl.current){
       const currentPosition = getMousePos(canvasEl.current, evt);
       setLines((prev) => [...prev, {...currentPosition, color: colors[selectedColor]}]);
     }
   }
   const mouseup = () => {
+    if (!canDraw) return;
     setIsMouseDown(false);
     setLines([]);
   }
@@ -50,22 +57,24 @@ function Canvas() {
 
   return (
     <div className="canvas_wrap">
-      <canvas 
-        ref={canvasEl} 
+      <canvas
+        ref={canvasEl}
         className="canvas"
         onMouseDown={mousedown}
         onMouseMove={mousemove}
         onMouseUp={mouseup}
       />
 
-      <div className="colors">
-        {Object.keys(colors).map((color) => (
-          <label className="colors_color">
-            <input type="radio" name="color" value={color} onClick={() => setSelectedColor(color)} />
-            <span style={{backgroundColor: colors[color]}} />
-          </label>
-        ))}
-      </div>
+      {canDraw && (
+        <div className="colors">
+          {Object.keys(colors).map((color) => (
+            <label className="colors_color">
+              <input type="radio" name="color" value={color} onClick={() => setSelectedColor(color)} />
+              <span style={{backgroundColor: colors[color]}} />
+            </label>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
