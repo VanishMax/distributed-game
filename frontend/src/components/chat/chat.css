@@ -11,6 +11,7 @@
 .chat_messages {
   flex-grow: 1;
   overflow-y: auto;
+  padding: 10px;
 }
 
 .chat_message {
@@ -18,7 +19,7 @@
 }
 
 .chat_message_author {
-
+  font-weight: 600;
 }
 
 .chat_input {

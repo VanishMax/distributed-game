@@ -81,7 +81,6 @@ function Canvas({ canDraw, update, lines }: CanvasProps) {
     setMoves([]);
   }
 
-
   return (
     <div className="canvas_wrap">
       <canvas

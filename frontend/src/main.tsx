@@ -37,7 +37,7 @@ function App() {
       <div className="header">
         <h1 style={{display: "inline", color: "#c20000"}}>A</h1>
         <h1 style={{display: "inline", color: "#c25e00"}}>r</h1>
-        <h1 style={{display: "inline", color: "#c2a500"}}>c</h1>
+        <h1 style={{display: "inline", color: "#e4d504"}}>c</h1>
         <h1 style={{display: "inline", color: "#88c200"}}>o</h1>
         <h1 style={{display: "inline", color: "#00c251"}}>b</h1>
         <h1 style={{display: "inline", color: "#00a5c2"}}>a</h1>
