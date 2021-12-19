@@ -7,8 +7,6 @@ const adjectives = [
   'Spicy',
   'Motionless',
   'Electric',
-  'Useless',
-  'Ambitious',
   'Fragile',
   'Wet',
   'Skinny',
@@ -19,7 +17,9 @@ const adjectives = [
   'Wooden',
   'Striped',
   'Furry',
-  'Salty'
+  'Salty',
+  'Pretty',
+  'Black'
 ];
 const nouns = [
   'staircase',

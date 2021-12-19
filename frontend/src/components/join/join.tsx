@@ -5,7 +5,7 @@ import socketConnection from '../../utils/sockets';
 import './join.css';
 
 interface JoinProps {
-  onJoin: (players: Player[]) => void,
+  onJoin: (players: Player[], name: string) => void,
 }
 
 function Join({ onJoin }: JoinProps) {
@@ -37,7 +37,7 @@ function Join({ onJoin }: JoinProps) {
         });
 
         s.on('game-started', (players: Player[]) => {
-          onJoin(players);
+          onJoin(players, name);
         });
 
         window.addEventListener('beforeunload', () => {

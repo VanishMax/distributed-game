@@ -13,11 +13,11 @@ function App() {
   const [myPlayer, setMyPlayer] = useState<Player>();
   const [word, setWord] = useState<string | null>();
 
-  const startGame = (gamePlayers: Player[]) => {
+  const startGame = (gamePlayers: Player[], name: string) => {
     setJoined(true);
     setPlayers(gamePlayers);
 
-    const me = gamePlayers.find(player => player.id === socket?.id) as Player;
+    const me = gamePlayers.find(player => player.id === name) as Player;
     setMyPlayer(me);
     setWord(me.type === 'drawer' ? getRandomPhrase() : null);
   };
@@ -50,7 +50,7 @@ function App() {
             Congratulations! You are a {myPlayer.type}.&nbsp;
             {myPlayer.type === 'guesser'
               ? <span>You need to guess the word.</span>
-              : <span>You need to draw the <b>"{word}"</b></span>
+              : <span>You need to draw a <b>"{word}"</b></span>
             }
           </span>
         ) : null}
@@ -58,7 +58,7 @@ function App() {
 
       {!joined ? (
         <Join
-          onJoin={(gamePlayers) => startGame(gamePlayers)}
+          onJoin={(gamePlayers, myName) => startGame(gamePlayers, myName)}
         />
       ) : myPlayer && players.length && socket ? (
         <Game

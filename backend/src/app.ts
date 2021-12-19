@@ -22,6 +22,7 @@ const sendInvitation = async () => {
   sockets.forEach((sock) => {
       sock.emit('game-started', connected.map((player, i) => ({
           ...player,
+          id: player.name,
           type: i === rand ? 'drawer' : 'guesser',
       })));
   });

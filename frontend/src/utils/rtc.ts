@@ -33,6 +33,10 @@ const setupRtc = (me: Player, players: Player[], dataCallback: (d: RtcMessage) =
     conn.on('data', (data) => dataCallback(data));
   });
 
+  rtc.on('error', (conn) => {
+    console.log(conn);
+  });
+
   const sendMessage = (text: string, player?: Player, correct?: boolean) => {
     connections.map((conn) => {
       conn.connection.send({
