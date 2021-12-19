@@ -42,7 +42,6 @@ const nouns = [
   'owl',
   'dinosaur',
   'burglar',
-  'pussy',
   'deer'
 ];
 
