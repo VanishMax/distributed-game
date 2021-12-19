@@ -30,6 +30,7 @@ body {
   grid-column-end: span 4;
   text-align: center;
   align-items: center;
+  padding-top: 15px;
 }
 
 .layout .join {

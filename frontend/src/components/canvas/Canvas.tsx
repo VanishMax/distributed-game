@@ -19,6 +19,7 @@ function Canvas({ canDraw, update, lines }: CanvasProps) {
   const [selectedColor, setSelectedColor] = useState('');
   const [isMouseDown, setIsMouseDown] = useState(false);
   const [moves, setMoves] = useState<Line[]>([]);
+  const [counter, setCounter] = useState(0);
 
   const canvasEl = useRef<HTMLCanvasElement>(null);
   const  getMousePos =(canvas: HTMLCanvasElement, evt: MouseEvent) => {
@@ -66,6 +67,11 @@ function Canvas({ canDraw, update, lines }: CanvasProps) {
     if(isMouseDown && canvasEl.current){
       const currentPosition = getMousePos(canvasEl.current, evt);
       setMoves((prev) => [...prev, {...currentPosition, color: colors[selectedColor]}]);
+      if(counter%30 === 0) {
+        setCounter(0);
+        update(moves);
+      }
+      setCounter(prev => prev + 1);
     }
   }
   const mouseup = () => {

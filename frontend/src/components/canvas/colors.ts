@@ -2,6 +2,7 @@ const colors: {[key: string]: string}= {
   red: '#9F1239',
   pink: '#F472B6',
   orange: '#FB923C',
+  yellow: "#fad504",
   lime: '#D9F99D',
   green: '#65A30D',
   emerald: '#10B981',

@@ -35,10 +35,19 @@ function App() {
   return (
     <div className="layout">
       <div className="header">
-        <h1>Distributed game</h1>
+        <h1 style={{display: "inline", color: "#c20000"}}>A</h1>
+        <h1 style={{display: "inline", color: "#c25e00"}}>r</h1>
+        <h1 style={{display: "inline", color: "#c2a500"}}>c</h1>
+        <h1 style={{display: "inline", color: "#88c200"}}>o</h1>
+        <h1 style={{display: "inline", color: "#00c251"}}>b</h1>
+        <h1 style={{display: "inline", color: "#00a5c2"}}>a</h1>
+        <h1 style={{display: "inline", color: "#004ac2"}}>l</h1>
+        <h1 style={{display: "inline", color: "#3a00c2"}}>e</h1>
+        <h1 style={{display: "inline", color: "#4a00c2"}}>n</h1>
+        <h1 style={{display: "inline", color: "#c200b2"}}>o</h1>
         {myPlayer ? (
-          <span>
-            Congratulations! You are {myPlayer.type}.&nbsp;
+          <span style={{display: "block"}}>
+            Congratulations! You are a {myPlayer.type}.&nbsp;
             {myPlayer.type === 'guesser'
               ? <span>You need to guess the word.</span>
               : <span>You need to draw the <b>"{word}"</b></span>
