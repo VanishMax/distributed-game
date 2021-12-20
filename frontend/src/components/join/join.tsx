@@ -3,6 +3,8 @@ import type { Player } from '../../types';
 import { useState } from 'react';
 import socketConnection from '../../utils/sockets';
 import './join.css';
+import { Socket } from 'socket.io-client';
+import { DefaultEventsMap } from '@socket.io/component-emitter';
 
 interface JoinProps {
   onJoin: (players: Player[], name: string) => void,
@@ -13,6 +15,9 @@ function Join({ onJoin }: JoinProps) {
   const [err, setErr] = useState('');
   const [success, setSuccess] = useState(false);
   const [joined, setJoined] = useState(0);
+  const [socket, setSocket] = useState<Socket<DefaultEventsMap, DefaultEventsMap> | undefined>(undefined);
+  const [waitingReady, setWaitingReady] = useState(false);
+
 
   const roomJoin = () => {
     if (success) return;
@@ -22,7 +27,7 @@ function Join({ onJoin }: JoinProps) {
     }
 
     setErr('');
-    socketConnection({
+    setSocket(socketConnection({
       name,
       onConnect: (s) => {
         setSuccess(true);
@@ -48,8 +53,13 @@ function Join({ onJoin }: JoinProps) {
       onError: () => {
         setErr('Failed connecting!');
       },
-    })
+    }));
   };
+
+  const onReady =() => {
+    socket?.emit('ready');
+    setWaitingReady(true);
+  }
 
   return (
     <div className="join">
@@ -59,9 +69,12 @@ function Join({ onJoin }: JoinProps) {
         placeholder="Enter the nickname"
         value={name}
         onInput={(e) => setName(e.currentTarget.value)}
+        disabled={success || waitingReady}
       />
-      <button disabled={success} type="button" className="join_btn" onClick={roomJoin}>Join the room</button>
-      {success && <p className="join_joined">Already joined: {joined} / 4</p>}
+      {success && !waitingReady && <button disabled={joined < 4} type="button" className="ready_btn" onClick={onReady}>I'm ready!</button>}
+      {!success && !waitingReady && <button disabled={success} type="button" className="join_btn" onClick={roomJoin}>Join the room</button>}
+      {success && !waitingReady && <p className="join_joined">4 players at least are required: {joined} / 4</p>}
+      {waitingReady && "Waiting for other players to be ready!.."}
       {err && <p className="join_failed">{err}</p>}
     </div>
   );

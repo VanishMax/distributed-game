@@ -25,8 +25,16 @@ interface RtcMessageMessage {
 
 interface RtcMessageCanvas {
   type: 'canvas',
-  // TODO: implement sending canvas events
   drawings: any,
 }
 
-export type RtcMessage = RtcMessageMessage | RtcMessageCanvas;
+interface RtcMessageTimer {
+  type: 'timer',
+  timer: any,
+}
+
+interface RtcMessageGameLost {
+  type: 'lost',
+}
+
+export type RtcMessage = RtcMessageMessage | RtcMessageCanvas | RtcMessageTimer | RtcMessageGameLost;

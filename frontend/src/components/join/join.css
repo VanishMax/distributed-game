@@ -15,6 +15,22 @@
   text-transform: uppercase;
 }
 
+.ready_btn {
+  background: hsl(0, 95%, 43%);
+  border: 1px solid hsl(0, 69%, 15%);
+  color: white;
+  border-radius: 0.5rem;
+  padding: 1.5rem 6rem;
+  cursor: pointer;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.ready_btn:disabled {
+  background: hsl(0, 39%, 56%);
+  cursor: not-allowed;
+}
+
 .join_inp {
   margin-bottom: 1rem;
   background: hsl(0, 0%, 95%);
@@ -25,8 +41,6 @@
   font-weight: bold;
   text-transform: uppercase;
 }
-
-.join_joined {}
 
 .join_failed {
   color: hsl(0, 50%, 50%);

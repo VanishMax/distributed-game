@@ -25,6 +25,7 @@ const socketConnection = (props: ConnectionProps) => {
   socket.on('connect_error', () => {
     props.onError?.();
   });
+  return socket;
 };
 
 export default socketConnection;

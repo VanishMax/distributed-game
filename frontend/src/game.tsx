@@ -27,6 +27,8 @@ function Game({ me, word, players, socket, leave }: GameProps) {
   const [rtc, setRtc] = useState<ReturnType<typeof setupRtc>>();
   const isDrawer = me.type === 'drawer';
   const [winner, setWinner] = useState<string>();
+  const [timer, setTimer] = useState<number>(10);
+  let interval: NodeJS.Timer;
 
   const addMessage = (msg: string, name: string) => {
     setMessages((prev) => [...prev, {
@@ -67,10 +69,41 @@ function Game({ me, word, players, socket, leave }: GameProps) {
         setLines(data.drawings);
         return;
       }
+      if(data.type === 'timer') {
+        setTimer(data.timer);
+        return;
+      }
+      if(data.type === 'lost') {
+        socket?.emit('game-over');
+        setWinner('Nobody');
+        return;
+      }
     });
 
+    if(isDrawer) {
+      interval = setInterval(() => {
+        setTimer(prev => prev-1);
+      }, 1000);
+    }
+
     setRtc(webrtc);
+    return () => {
+      clearInterval(interval);
+    }
   }, []);
+
+  useEffect(() => {
+    if(isDrawer) {
+      rtc?.updateTimer(timer);
+      if(timer === 0) {
+        clearInterval(interval);
+        rtc?.gameLost();
+        socket?.emit('game-over');
+        setWinner('Nobody');
+      }
+    }
+  }, [timer]);
+
 
   return (
     <>
@@ -97,6 +130,9 @@ function Game({ me, word, players, socket, leave }: GameProps) {
         ) : null}
       </div>
 
+      <div style={{color: Math.floor(timer/60) === 0 ? "red" : "auto"}}>
+        <h1>{Math.floor(timer/60)}:{timer%60}</h1>
+      </div>
       <Canvas
         canDraw={me.type === 'drawer'}
         lines={lines}

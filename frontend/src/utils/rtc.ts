@@ -56,6 +56,25 @@ const setupRtc = (me: Player, players: Player[], dataCallback: (d: RtcMessage) =
       } as RtcMessage);
     });
   };
+
+  const updateTimer = (timer?: number) => {
+    connections.map((conn) => {
+      conn.connection.send({
+        type: 'timer',
+        timer,
+      } as RtcMessage);
+    });
+  }
+
+  const gameLost = (timer?: number) => {
+    connections.map((conn) => {
+      conn.connection.send({
+        type: 'lost',
+        timer,
+      } as RtcMessage);
+    });
+  }
+
   const onUnmount = () => {
     rtc.destroy();
   };
@@ -63,7 +82,9 @@ const setupRtc = (me: Player, players: Player[], dataCallback: (d: RtcMessage) =
   return {
     sendMessage,
     updateCanvas,
+    updateTimer,
     onUnmount,
+    gameLost
   };
 };
 

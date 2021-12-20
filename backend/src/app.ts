@@ -12,6 +12,7 @@ const io = new Server(server, {
 const DEFAULT_ROOM = 'room';
 let connected: { id: string, name: string, type: 'drawer' | 'guesser' | null }[] = [];
 let gameStarted = false;
+let readyPlayers: number = 0;
 
 const random = (min: number, max: number) => Math.floor(Math.random() * (max - min)) + min;
 
@@ -48,9 +49,12 @@ io.on('connection', async (socket) => {
     socket.emit('joined-amount', connected.length);
     socket.to(DEFAULT_ROOM).emit('joined-amount', connected.length);
 
-    if (connected.length === 4) {
-        await sendInvitation();
-    }
+    socket.on('ready', async () => {
+        readyPlayers += 1;
+        if (readyPlayers === connected.length && connected.length >= 3) {
+            await sendInvitation();
+        }
+    });
 
     socket.on('game-over', async () => {
         gameStarted = false;
@@ -62,6 +66,7 @@ io.on('connection', async (socket) => {
         console.log(`User ${name} with id ${socket.id} has left!`);
         connected = connected.filter((sock) => sock.id !== socket.id);
         if (connected.length <= 1) {
+            readyPlayers = 0;
             gameStarted = false;
             io.emit('game-finished');
         }

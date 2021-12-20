@@ -9,6 +9,15 @@ interface GameOverProps {
 }
 
 function GameOver({ winner, amIWinner, goBack }: GameOverProps) {
+  if (winner === 'Nobody') {
+    return (
+      <div className={'game-over' + (winner ? (' open') : '')}>
+      <h2>The game is finished!</h2>
+          <p><strong>{winner || ''}</strong> guessed the phrase in time... 😒</p>
+      <button type="button" onClick={() => goBack()}>Go back to lobby</button>
+    </div>
+    )
+  }
   return (
     <div className={'game-over' + (winner ? (' open') : '')}>
       {amIWinner ? (
