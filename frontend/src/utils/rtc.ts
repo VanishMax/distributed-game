@@ -9,7 +9,7 @@ const setupRtc = (me: Player, players: Player[], dataCallback: (d: RtcMessage) =
   const otherPlayers = players.filter(player => player.id !== me.id);
 
   rtc.on('open', (id) => {
-    console.log('My peer ID is:', id, Date.now());
+    console.log('My peer ID is:', id);
 
     if (me.type === 'drawer') {
       otherPlayers.map((player) => {

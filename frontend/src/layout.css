@@ -34,9 +34,14 @@ body {
 }
 
 .layout .join {
+  max-width: 600px;
   grid-row-start: 2;
   grid-column-start: 2;
   grid-column-end: 6;
+}
+
+.layout .join > * {
+  width: 100%;
 }
 
 .layout .chat {
@@ -64,20 +69,51 @@ body {
   margin-right: 1rem;
 }
 
+.layout .timer {
+  grid-row-start: 1;
+  grid-column-start: 2;
+  grid-column-end: 2;
+  text-align: center;
+  align-items: center;
+}
+
 @media (max-width: 900px) {
+  .layout {
+    grid-template-rows: 120px 300px 300px auto;
+    grid-template-columns: 5% 90% 5%;
+    grid-column-gap: 6px;
+    height: auto;
+    width: 100%;
+  }
+
+  .layout .join {
+    grid-row-start: 2;
+    grid-column-start: 2;
+    grid-column-end: 3;
+  }
+
+  .layout .timer {
+    grid-column-start: 1;
+    margin-left: 1rem;
+    margin-top: -0.5rem;
+  }
+
   .layout .chat {
     grid-row-start: 3;
     grid-column-start: 2;
-    grid-column-end: 6;  
+    grid-column-end: 3;
   }
+
   .layout .canvas_wrap {
-    grid-column-start: 2;
-  }
-  .layout .players {
     grid-row-start: 2;
-    grid-column-start: 1;
-    grid-column-end: 2;
-    flex-direction: column;
+    grid-column-start: 2;
+    grid-column-end: 3;
+  }
+
+  .layout .players {
+    grid-row-start: 4;
+    grid-column-start: 2;
+    grid-column-end: 3;
     align-items: center;
     justify-content: center;
     margin-bottom: 1rem;

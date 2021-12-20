@@ -62,13 +62,14 @@ io.on('connection', async (socket) => {
         (await io.fetchSockets()).map(conn => conn.disconnect());
     });
 
-    socket.on('disconnect', () => {
+    socket.on('disconnect', async () => {
         console.log(`User ${name} with id ${socket.id} has left!`);
         connected = connected.filter((sock) => sock.id !== socket.id);
         if (connected.length <= 1) {
             readyPlayers = 0;
             gameStarted = false;
-            io.emit('game-finished');
+            connected = [];
+            (await io.fetchSockets()).map(conn => conn.disconnect());
         }
     });
 

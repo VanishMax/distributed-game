@@ -27,7 +27,7 @@ function Game({ me, word, players, socket, leave }: GameProps) {
   const [rtc, setRtc] = useState<ReturnType<typeof setupRtc>>();
   const isDrawer = me.type === 'drawer';
   const [winner, setWinner] = useState<string>();
-  const [timer, setTimer] = useState<number>(10);
+  const [timer, setTimer] = useState<number>(120);
   let interval: NodeJS.Timer;
 
   const addMessage = (msg: string, name: string) => {
@@ -107,6 +107,10 @@ function Game({ me, word, players, socket, leave }: GameProps) {
 
   return (
     <>
+      <div className="timer" style={{color: Math.floor(timer/60) === 0 ? "red" : "auto"}}>
+        <h1>{Math.floor(timer/60)}:{timer%60}</h1>
+      </div>
+
       <div className="chat">
         <div className="chat_messages">
           {messages.map((message) => (
@@ -130,9 +134,6 @@ function Game({ me, word, players, socket, leave }: GameProps) {
         ) : null}
       </div>
 
-      <div style={{color: Math.floor(timer/60) === 0 ? "red" : "auto"}}>
-        <h1>{Math.floor(timer/60)}:{timer%60}</h1>
-      </div>
       <Canvas
         canDraw={me.type === 'drawer'}
         lines={lines}
