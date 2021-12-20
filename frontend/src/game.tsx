@@ -7,6 +7,7 @@ import Player from './components/player/Player';
 import './components/chat/chat.css';
 import setupRtc from './utils/rtc';
 import GameOver from './components/game-over/game-over';
+import useUnload from './utils/use-unload';
 
 interface GameProps {
   me: PlayerType,
@@ -48,6 +49,13 @@ function Game({ me, word, players, socket, leave }: GameProps) {
     setLines(newLines);
   };
 
+  useUnload((e) => {
+    e.preventDefault();
+    console.log('here', rtc);
+    rtc?.leave();
+    leave();
+  });
+
   useEffect(() => {
     const webrtc = setupRtc(me, players, (data) => {
       if (data.type === 'message') {
@@ -69,10 +77,25 @@ function Game({ me, word, players, socket, leave }: GameProps) {
         setLines(data.drawings);
         return;
       }
+
       if(data.type === 'timer') {
         setTimer(data.timer);
         return;
+        
       }
+
+      if(data.type === 'leave') {
+        addMessage(`Player ${data.player.name} has left.`, 'System');
+        if (isDrawer) {
+          webrtc.leave(data.player);
+        }
+        if (data.player.type === 'drawer') {
+          setWinner('Nobody');
+          socket?.emit('game-over');
+        }
+        return;
+      }
+
       if(data.type === 'lost') {
         socket?.emit('game-over');
         setWinner('Nobody');
@@ -87,6 +110,7 @@ function Game({ me, word, players, socket, leave }: GameProps) {
     }
 
     setRtc(webrtc);
+
     return () => {
       clearInterval(interval);
     }

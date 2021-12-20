@@ -2,8 +2,10 @@ import Peer from 'peerjs';
 import type { Player, Connection, RtcMessage } from '../types';
 import type { Line } from '../components/canvas/Canvas';
 
+const NAME_HASH = 'kjhk4jhtjknsddjf3';
+
 const setupRtc = (me: Player, players: Player[], dataCallback: (d: RtcMessage) => void) => {
-  const rtc = new Peer(me.id);
+  const rtc = new Peer(NAME_HASH + me.id);
   const connections: Connection[] = [];
 
   const otherPlayers = players.filter(player => player.id !== me.id);
@@ -13,7 +15,7 @@ const setupRtc = (me: Player, players: Player[], dataCallback: (d: RtcMessage) =
 
     if (me.type === 'drawer') {
       otherPlayers.map((player) => {
-        const conn = rtc.connect(player.id as string, {
+        const conn = rtc.connect(NAME_HASH + player.id as string, {
           reliable: true,
         });
         connections.push({
@@ -64,7 +66,7 @@ const setupRtc = (me: Player, players: Player[], dataCallback: (d: RtcMessage) =
         timer,
       } as RtcMessage);
     });
-  }
+  };
 
   const gameLost = (timer?: number) => {
     connections.map((conn) => {
@@ -73,7 +75,20 @@ const setupRtc = (me: Player, players: Player[], dataCallback: (d: RtcMessage) =
         timer,
       } as RtcMessage);
     });
-  }
+  };
+
+  const leave = (player?: Player) => {
+    connections.map((conn) => {
+      try {
+        conn.connection.send({
+          type: 'leave',
+          player: player || me,
+        } as RtcMessage);
+      } catch (e) {
+        console.error(e);
+      }
+    });
+  };
 
   const onUnmount = () => {
     rtc.destroy();
@@ -84,7 +99,8 @@ const setupRtc = (me: Player, players: Player[], dataCallback: (d: RtcMessage) =
     updateCanvas,
     updateTimer,
     onUnmount,
-    gameLost
+    gameLost,
+    leave,
   };
 };
 

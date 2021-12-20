@@ -37,4 +37,14 @@ interface RtcMessageGameLost {
   type: 'lost',
 }
 
-export type RtcMessage = RtcMessageMessage | RtcMessageCanvas | RtcMessageTimer | RtcMessageGameLost;
+interface RtcMessageLeave {
+  type: 'leave',
+  player: Player,
+}
+
+export type RtcMessage =
+  | RtcMessageMessage
+  | RtcMessageCanvas
+  | RtcMessageTimer
+  | RtcMessageLeave
+  | RtcMessageGameLost;

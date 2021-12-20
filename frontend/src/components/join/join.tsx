@@ -18,7 +18,6 @@ function Join({ onJoin }: JoinProps) {
   const [socket, setSocket] = useState<Socket<DefaultEventsMap, DefaultEventsMap> | undefined>(undefined);
   const [waitingReady, setWaitingReady] = useState(false);
 
-
   const roomJoin = () => {
     if (success) return;
     if (!name) {
@@ -48,7 +47,6 @@ function Join({ onJoin }: JoinProps) {
         window.addEventListener('beforeunload', () => {
           s.emit('unload');
         });
-
       },
       onError: () => {
         setErr('Failed connecting!');
