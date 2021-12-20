@@ -1,3 +1,5 @@
-# Distributed Game
+# Arcobaleno
 
-Web game with peer-to-peer communication between playeers
+A distributed web game with peer-to-peer communication between players.
+
+![](./screenshot.png)

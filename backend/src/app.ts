@@ -78,7 +78,7 @@ io.on('connection', async (socket) => {
     });
 });
 
-const port: number = 3001;
+const port = (process.env.PORT || 3001) as number;
 server.listen(port, () => {
     console.log(`Listening on localhost:${port}`);
 });
